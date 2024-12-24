@@ -51,12 +51,12 @@ export const registerCompany = async (req, res) =>{
 
 //company login--------------------------------------------------------------------
 export const loginCompany = async (req, res) =>{
-    const {email, password} = req.body;
     try {
+        const {email, password} = req.body;
       
         const company = await Company.findOne({email})
 
-        if(bcrypt.compare(password, company.password)){
+        if(await bcrypt.compare(password, company.password)){
             res.json({
                 success: true,
                 company:{
