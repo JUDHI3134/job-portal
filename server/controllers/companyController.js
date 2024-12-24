@@ -79,9 +79,10 @@ export const loginCompany = async (req, res) =>{
 //get conpany data-------------------------------------------------------------------
 export const getCompantData = async (req, res) =>{
     try {
-        
+        const company = req.company;
+      res.json({success: true, company})  
     } catch (error) {
-        
+        res.json({success: false, message: error.message})
     }
 }
 
@@ -112,7 +113,7 @@ export const postJob = async (req, res) =>{
     }
 }
 
-//get company job applicants
+//get company job applicants----------------------------------------------
 export const getCompanyJobApplicants = async (req, res) =>{
     try {
         
@@ -121,7 +122,7 @@ export const getCompanyJobApplicants = async (req, res) =>{
     }
 }
 
-//get company posted job
+//get company posted job-------------------------------------------------------
 export const getCompanyPostedJobs = async (req, res) =>{
     try {
         
@@ -130,7 +131,7 @@ export const getCompanyPostedJobs = async (req, res) =>{
     }
 }
 
-//change Job Application Status
+//change Job Application Status--------------------------------------------------
 export const changeJobApplicationStatus = async (req, res) =>{
     try {
         
@@ -139,7 +140,7 @@ export const changeJobApplicationStatus = async (req, res) =>{
     }
 }
 
-//change Job Visiblity
+//change Job Visiblity--------------------------------------------------------------
 export const changeJobVisiblity = async (req, res) =>{
     try {
         
