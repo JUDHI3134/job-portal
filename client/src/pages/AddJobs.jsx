@@ -1,6 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Quill from 'quill'
 import { JobCategories, JobLocations } from '../assets/assets'
+import { AppContext } from '../context/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const AddJobs = () => {
 
@@ -10,8 +13,31 @@ const AddJobs = () => {
   const [level, setLevel] = useState('Beginner level')
   const [salary, setSalary] = useState('')
 
+  const {backendUrl, companyToken} = useContext(AppContext)
+
   const editorRef = useRef(null)
   const quillRef = useRef(null)
+
+  const onSubmitHandler = async (e) =>{
+    e.preventDefault();
+    try {
+      const description = quillRef.current.root.innerHTML
+
+      const {data} = await axios.post(backendUrl+"/api/company/post-job",{title, description,location,salary,category,level},{headers:{token:companyToken}})
+
+      if(data.success){
+        toast.success(data.message)
+        setTitle("")
+        setSalary(0)
+        quillRef.current.root.innerHTML = ""
+      }else{
+        toast.error(data.message)
+      }
+      
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
 
   useEffect(()=>{
     //initiate quill at once
@@ -24,7 +50,7 @@ const AddJobs = () => {
   },[])
 
   return (
-    <form className='container flex flex-col p-4 w-full items-start gap-3'>
+    <form onSubmit={onSubmitHandler} className='container flex flex-col p-4 w-full items-start gap-3'>
       
       <div className='w-full'>
         <p className='mb-2'>Job Title</p>
@@ -43,7 +69,7 @@ const AddJobs = () => {
       <div className='flex flex-col sm:flex-row gap-2 w-full sm:gap-8'>
         <div>
           <p className='mb-2'>Job Category</p>
-          <select className='w-full px-3 py-2 border-2 border-gray-300 rounded' onChange={e => setCategory(e.target.value)}>
+          <select className='w-full px-3 py-2 border-2 border-gray-300 rounded' onChange={e => setCategory(e.target.value)} value={category}>
             {JobCategories.map((category,index)=>(
               <option key={index} value={category}>{category}</option>
             ))}
@@ -54,7 +80,7 @@ const AddJobs = () => {
       
         <div>
           <p className='mb-2'>Job Locations</p>
-          <select className='w-full px-3 py-2 border-2 border-gray-300 rounded' onChange={e => setLocation(e.target.value)}>
+          <select className='w-full px-3 py-2 border-2 border-gray-300 rounded' onChange={e => setLocation(e.target.value)} value={location}>
             {JobLocations.map((location,index)=>(
               <option key={index} value={location}>{location}</option>
             ))}
@@ -65,7 +91,7 @@ const AddJobs = () => {
       
         <div>
           <p className='mb-2'>Job Level</p>
-          <select className='w-full px-3 py-2 border-2 border-gray-300 rounded' onChange={e => setLevel(e.target.value)}>
+          <select className='w-full px-3 py-2 border-2 border-gray-300 rounded' onChange={e => setLevel(e.target.value)} value={level}>
             <option value="Beginner level">Beginner level</option>
             <option value="Intermediate level">Intermediate level</option>
             <option value="Senior level">Senior level</option>
