@@ -27,13 +27,33 @@ const ViewApplications = () => {
     }
   }
 
+  //function to change job application status
+  const changeJobApplicationStatus = async (id, status) =>{
+    try {
+      const {data} = await axios.post(backendUrl+"/api/company/change-status",{id, status},{headers:{token: companyToken}})
+
+      if(data.success){
+        fetchCompanyJobApplications()
+      }else{
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   useEffect(()=>{
     if (companyToken) {
       fetchCompanyJobApplications()
     }
   },[companyToken])
 
-  return applicants ? applicants.length === 0 ? (<div></div>) : (
+  return applicants ? applicants.length === 0 ? (
+    <div className='flex items-center justify-center h-[70vh]'>
+    <p className='text-xl sm:text-2xl'>No Applications Available</p>
+  </div>
+  ) : (
     <div className='container mx-auto p-4'>
       <div>
         <table className='w-full max-w-4xl bg-white border border-gray-200 max-sm:text-sm'>
@@ -62,13 +82,14 @@ const ViewApplications = () => {
                     Resume <img src={assets.resume_download_icon} alt="" /></a>
                 </td>
                 <td className='py-2 pxx-4 border-b relative'>
-                  <div className='text-left relative group inline-block'>
+
+                  {applicant.status === "Pending" ?<div className='text-left relative group inline-block'>
                     <button className='text-gray-500 action-button'>...</button>
                     <div className='z-10 hidden absolute right-0 top-0 md:left-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow group-hover:block'>
-                      <button className='block w-full text-left px-4 py-2 text-blue-500 hover:bg-gray-100'>Accept</button>
-                      <button className='block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100'>Reject</button>
+                      <button onClick={() => changeJobApplicationStatus(applicant._id, 'Accepted')} className='block w-full text-left px-4 py-2 text-blue-500 hover:bg-gray-100'>Accept</button>
+                      <button onClick={() => changeJobApplicationStatus(applicant._id, 'Rejected')} className='block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100'>Reject</button>
                     </div>
-                  </div>
+                  </div>: <div>{applicant.status}</div> }
                 </td>
               </tr>
             ))}
