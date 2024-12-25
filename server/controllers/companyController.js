@@ -123,7 +123,7 @@ export const getCompanyJobApplicants = async (req, res) =>{
      const applications = await JobApplication.find({companyId}).populate('userId','name image resume').populate('jobId','title location category level salary').exec()
  
      return res.json({success: true, applications})  
-     
+
     } catch (error) {
         res.json({success: false, message: error.message})
     }
@@ -153,10 +153,15 @@ export const getCompanyPostedJobs = async (req, res) =>{
 export const changeJobApplicationStatus = async (req, res) =>{
     try {
        
+        const {id, status} = req.body
 
+        //find job applications and update status
+        await JobApplication.findOneAndUpdate({_id: id},{status})
+
+        res.json({success: true, message: "Status Changed"})
        
     } catch (error) {
-       
+        res.json({success: false, message: error.message})
     }
 }
 
